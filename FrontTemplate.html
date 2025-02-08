@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>競馬データ検索</title>
+</head>
+<body>
+    <h1>競馬データ検索</h1>
+
+    <!-- 距離セレクトボックス -->
+    <label for="distance">距離:</label>
+    <select id="distance">
+        <option value="1600">1600m</option>
+        <option value="2000">2000m</option>
+        <option value="2400">2400m</option>
+        <!-- 必要に応じてオプションを追加 -->
+    </select>
+
+    <!-- 馬場状態セレクトボックス -->
+    <label for="trackCondition">芝・ダート:</label>
+    <select id="trackCondition">
+        <option value="芝">芝</option>
+        <option value="ダ">ダート</option>
+    </select>
+
+    <!-- クエリ実行ボタン -->
+    <button onclick="fetchData()">決定</button>
+
+    <!-- 結果表示用テーブル -->
+    <div id="resultTable"></div>
+
+    <script>
+        async function fetchData() {
+            // 選択された値を取得
+            const distance = document.getElementById('distance').value;
+            const trackCondition = document.getElementById('trackCondition').value;
+
+            // サーバーにリクエスト送信（例: /api/query エンドポイント）
+            const response = await fetch('/api/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ distance, trackCondition })
+            });
+
+            // 結果をJSONとして取得
+            const data = await response.json();
+
+            // テーブル形式で結果を表示
+            let table = '<table border="1"><tr><th>父馬名</th><th>平均上がり3Fタイム</th><th>出走回数</th></tr>';
+            data.forEach(row => {
+                table += `<tr><td>${row.父馬名}</td><td>${row.平均上がり3Fタイム}</td><td>${row.出走回数}</td></tr>`;
+            });
+            table += '</table>';
+
+            document.getElementById('resultTable').innerHTML = table;
+        }
+    </script>
+</body>
+</html>
